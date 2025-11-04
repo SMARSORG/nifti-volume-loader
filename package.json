@@ -1,0 +1,83 @@
+{
+  "name": "@smars/nifti-volume-loader",
+  "version": "1.0.0",
+  "description": "Nifti Image Loader from Smars for Cornerstone3D",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "repository": "https://gitee.com/smars_org/nifti-volume-loader.git",
+  "files": [
+    "dist/esm"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "types": "./dist/esm/index.d.ts"
+    },
+    "./helpers": {
+      "import": "./dist/esm/helpers/index.js",
+      "types": "./dist/esm/helpers/index.d.ts"
+    },
+    "./helpers/*": {
+      "import": "./dist/esm/helpers/*.js",
+      "types": "./dist/esm/helpers/*.d.ts"
+    },
+    "./constants": {
+      "import": "./dist/esm/constants/index.js",
+      "types": "./dist/esm/constants/index.d.ts"
+    },
+    "./constants/*": {
+      "import": "./dist/esm/constants/*.js",
+      "types": "./dist/esm/constants/*.d.ts"
+    },
+    "./enums": {
+      "import": "./dist/esm/enums/index.js",
+      "types": "./dist/esm/enums/index.d.ts"
+    },
+    "./enums/*": {
+      "import": "./dist/esm/enums/*.js",
+      "types": "./dist/esm/enums/*.d.ts"
+    },
+    "./version": {
+      "node": "./dist/esm/version.js",
+      "import": "./dist/esm/version.js",
+      "types": "./dist/esm/version.d.ts"
+    }
+  },
+  "scripts": {
+    "prebuild": "echo 'Preparing build...'",
+    "build:esm": "tsc --project ./tsconfig.json",
+    "build:esm:watch": "tsc --project ./tsconfig.json --watch",
+    "build:all": "npm run build:esm",
+    "dev": "tsc --project ./tsconfig.json --watch",
+    "build": "npm run build:all",
+    "clean": "rm -rf dist",
+    "clean:deep": "npm run clean && rm -rf node_modules",
+    "lint": "echo 'Linting...'",
+    "prepublishOnly": "npm run build",
+    "publish:npm": "npm publish"
+  },
+  "dependencies": {
+    "nifti-reader-js": "^0.8.0"
+  },
+  "peerDependencies": {
+    "@cornerstonejs/core": "^4.8.3"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "contributors": [
+    {
+      "name": "smars_org",
+      "email": ""
+    }
+  ],
+  "license": "MIT",
+  "funding": {
+    "type": "individual",
+    "url": "https://gitee.com/smars_org/nifti-volume-loader/donate"
+  }
+}
