@@ -57,8 +57,76 @@ const invertDataPerFrame = (dimensions, imageDataArray) => {
   return newImageDataArray;
 };
 
+function correctAffine(affine) {
+  // 提取旋转和平移
+  const R = [
+    [affine[0][0], affine[0][1], affine[0][2]],
+    [affine[1][0], affine[1][1], affine[1][2]],
+    [affine[2][0], affine[2][1], affine[2][2]],
+  ];
+  const T = [affine[0][3], affine[1][3], affine[2][3]];
+
+  // 计算 spacing
+  const spacing = [
+    Math.hypot(R[0][0], R[1][0], R[2][0]),
+    Math.hypot(R[0][1], R[1][1], R[2][1]),
+    Math.hypot(R[0][2], R[1][2], R[2][2]),
+  ];
+
+  // 归一化方向
+  const dirs = [
+    [R[0][0] / spacing[0], R[1][0] / spacing[0], R[2][0] / spacing[0]],
+    [R[0][1] / spacing[1], R[1][1] / spacing[1], R[2][1] / spacing[1]],
+    [R[0][2] / spacing[2], R[1][2] / spacing[2], R[2][2] / spacing[2]],
+  ];
+
+  // 确定每个轴的主要方向
+  const orientation = [];
+  for (let i = 0; i < 3; i++) {
+    const d = dirs[i];
+    const abs = d.map(Math.abs);
+    const maxIdx = abs.indexOf(Math.max(...abs));
+    const sign = Math.sign(d[maxIdx]);
+    const label =
+        maxIdx === 0 ? (sign > 0 ? 'R' : 'L')
+            : maxIdx === 1 ? (sign > 0 ? 'A' : 'P')
+                : (sign > 0 ? 'S' : 'I');
+    orientation.push(label);
+  }
+
+  console.log(orientation.join(''));
+
+  // --- 动态生成正交 affine ---
+  // 1. 计算每个方向对应哪一个世界轴
+  // 2. 按该方向排列 spacing（自动翻转）
+  const corrected = [
+    [0, 0, 0, T[0]],
+    [0, 0, 0, T[1]],
+    [0, 0, 0, T[2]],
+    [0, 0, 0, 1],
+  ];
+
+  for (let i = 0; i < 3; i++) {
+    const label = orientation[i];
+    const flip = (label === 'L' || label === 'P' || label === 'I') ? -1 : 1;
+
+    if (label === 'R' || label === 'L') {
+      corrected[0][i] = flip * spacing[i];
+    } else if (label === 'A' || label === 'P') {
+      corrected[1][i] = flip * spacing[i];
+    } else if (label === 'S' || label === 'I') {
+      corrected[2][i] = flip * spacing[i];
+    }
+  }
+
+  return corrected;
+}
+
 function rasToLps(niftiHeader) {
-  const { affine } = niftiHeader;
+  let { affine } = niftiHeader;
+
+  // Correct affine
+  affine = correctAffine(affine);
 
   // RAS
   const { orientation, origin, spacing } = parseAffineMatrix(affine);

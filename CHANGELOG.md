@@ -5,4 +5,6 @@ See [standard-version](https://gitee.com/smars_org/nifti-volume-loader.git) for 
 
 ## [1.0.0](https://gitee.com/smars_org/nifti-volume-loader.git) (2025-11-04)
 
+## [1.0.1](https://gitee.com/smars_org/nifti-volume-loader.git) (2025-11-04)
+
 ### Features
