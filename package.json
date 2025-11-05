@@ -4,7 +4,7 @@
   "description": "Nifti Image Loader from Smars for Cornerstone3D",
   "module": "./dist/esm/index.js",
   "types": "./dist/esm/index.d.ts",
-  "repository": "https://gitee.com/smars_org/nifti-volume-loader.git",
+  "repository": "https://github.com/SMARSORG/nifti-volume-loader.git",
   "files": [
     "dist/esm"
   ],

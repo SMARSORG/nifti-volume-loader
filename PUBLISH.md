@@ -19,7 +19,7 @@
 ```json
 {
   "name": "@smars/nifti-volume-loader", // 改为您的组织名
-  "repository": "https://gitee.com/smars_org/nifti-volume-loader.git" // 改为您的仓库
+  "repository": "https://github.com/SMARSORG/nifti-volume-loader.git" // 改为您的仓库
 }
 ```
 
@@ -43,13 +43,17 @@
 npm install
 
 # 2. 运行准备脚本
+npm whoami
+npm login
 node prepare-publish.js
 
 # 3. 构建包
+npm run clean &&
 npm run build
 
+
 # 4. 检查构建结果
-ls -la dist/esm/
+npm pack --dry-runs
 
 # 5. 发布到 npm
 npm publish
