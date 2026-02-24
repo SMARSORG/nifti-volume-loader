@@ -391,12 +391,12 @@ async function fetchAndAllocateNiftiVolume(url) {
 
   urlsMap.delete(niftiURL);
 
-  return imageIds;
+  return { imageIds, niftiHeader };
 }
 
 async function createNiftiImageIdsAndCacheMetadata({ url }) {
-  const imageIds = await fetchAndAllocateNiftiVolume(url);
-  return imageIds;
+  const { imageIds, niftiHeader } = await fetchAndAllocateNiftiVolume(url);
+  return { imageIds, niftiHeader };
 }
 
 export { createNiftiImageIdsAndCacheMetadata };

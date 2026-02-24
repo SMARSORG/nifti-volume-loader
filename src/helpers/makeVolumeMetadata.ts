@@ -1,8 +1,6 @@
 import type { Types } from '@cornerstonejs/core';
-import { utilities } from '@cornerstonejs/core';
 import { vec3 } from 'gl-matrix';
 
-const { windowLevel } = utilities;
 
 // everything here is LPS
 export default function makeVolumeMetadata(
