@@ -122,6 +122,50 @@ function correctAffine(affine) {
   return corrected;
 }
 
+/**
+ * Extract direction matrix from NIfTI affine matrix in SimpleITK format (row-major, LPS)
+ * SimpleITK uses row-major order: [row0_x, row0_y, row0_z, row1_x, row1_y, row1_z, row2_x, row2_y, row2_z]
+ * Reference: https://simpleitk.readthedocs.io/en/master/fundamentalConcepts.html
+ */
+function getoriginDirection(affine) {
+  // Extract spacing from affine matrix
+  const spacing = [
+    Math.sqrt(affine[0][0] ** 2 + affine[1][0] ** 2 + affine[2][0] ** 2),
+    Math.sqrt(affine[0][1] ** 2 + affine[1][1] ** 2 + affine[2][1] ** 2),
+    Math.sqrt(affine[0][2] ** 2 + affine[1][2] ** 2 + affine[2][2] ** 2),
+  ];
+
+  // Extract direction matrix (normalized rotation part) in RAS space (row-major)
+  const directionRAS = [
+    affine[0][0] / spacing[0],
+    affine[0][1] / spacing[1],
+    affine[0][2] / spacing[2],
+    affine[1][0] / spacing[0],
+    affine[1][1] / spacing[1],
+    affine[1][2] / spacing[2],
+    affine[2][0] / spacing[0],
+    affine[2][1] / spacing[1],
+    affine[2][2] / spacing[2],
+  ];
+
+  // Convert from RAS to LPS (keep row-major order)
+  // RAS to LPS: negate first two rows (X and Y world coordinate rows)
+  // In row-major format: [r0c0, r0c1, r0c2, r1c0, r1c1, r1c2, r2c0, r2c1, r2c2]
+  const directionLPS = [
+    -directionRAS[0], // row0_col0 (negate entire row 0)
+    -directionRAS[1], // row0_col1 (negate entire row 0)
+    -directionRAS[2], // row0_col2 (negate entire row 0)
+    -directionRAS[3], // row1_col0 (negate entire row 1)
+    -directionRAS[4], // row1_col1 (negate entire row 1)
+    -directionRAS[5], // row1_col2 (negate entire row 1)
+    directionRAS[6],  // row2_col0 (keep row 2)
+    directionRAS[7],  // row2_col1 (keep row 2)
+    directionRAS[8],  // row2_col2 (keep row 2)
+  ];
+
+  return directionLPS;
+}
+
 function rasToLps(niftiHeader) {
   let { affine } = niftiHeader;
 
@@ -147,10 +191,14 @@ function rasToLps(niftiHeader) {
     orientation[8],
   ];
 
+  // Get SimpleITK-compatible direction from original affine (before correction)
+  const originDirection = getoriginDirection(niftiHeader.affine);
+
   return {
     origin: newOrigin,
     orientation: newOrientation,
     spacing,
+    originDirection,
   };
 }
 

@@ -179,6 +179,7 @@ function handleNiftiHeader(data): {
   spacing: number[];
   header: unknown;
   arrayConstructor: unknown;
+  originDirection: number[];
 } {
   if (data.length < HEADER_CHECK_SIZE) {
     // @ts-ignore
@@ -191,7 +192,7 @@ function handleNiftiHeader(data): {
 
     // @ts-ignore
     const version = header.sizeof_hdr === NIFTI2_HEADER_SIZE ? 2 : 1;
-    const { orientation, origin, spacing } = rasToLps(header);
+    const { orientation, origin, spacing, originDirection } = rasToLps(header);
     const { dimensions, direction } = makeVolumeMetadata(
       header,
       orientation,
@@ -211,6 +212,7 @@ function handleNiftiHeader(data): {
       spacing,
       header,
       arrayConstructor,
+      originDirection,
     };
   } catch (error) {
     console.error('Error reading Nifti header:', error);
@@ -255,6 +257,7 @@ async function fetchAndAllocateNiftiVolume(url) {
     spacing: number[];
     header: unknown;
     arrayConstructor: unknown;
+    originDirection: number[];
   };
 
   const {
@@ -267,6 +270,7 @@ async function fetchAndAllocateNiftiVolume(url) {
     header,
     spacing,
     arrayConstructor,
+    originDirection,
   } = niftiHeader;
 
   const numImages = dimensions[2];
@@ -391,7 +395,18 @@ async function fetchAndAllocateNiftiVolume(url) {
 
   urlsMap.delete(niftiURL);
 
-  return { imageIds, niftiHeader };
+  return {
+    imageIds,
+    niftiHeader: {
+      dimensions,
+      direction,
+      origin,
+      spacing,
+      version,
+      header,
+      originDirection,
+    }
+  };
 }
 
 async function createNiftiImageIdsAndCacheMetadata({ url }) {
