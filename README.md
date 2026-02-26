@@ -1,6 +1,6 @@
 # @smars/nifti-volume-loader
 
-独立的 NIfTI 体积数据加载器，基于 Cornerstone3D 框架。
+独立的 NIfTI 体积数据加载器，基于 Cornerstone3D 框架。支持返回原始NII文件对应的originDirection,对其SimpleITK 获取到的Direction
 
 ## 安装
 
@@ -23,7 +23,7 @@ import {
 init();
 
 // 创建图像 ID 并缓存元数据
-const imageIds = await createNiftiImageIdsAndCacheMetadata({
+const {imageIds, niftiHeader} = await createNiftiImageIdsAndCacheMetadata({
   url: 'path/to/your/nifti/file.nii.gz',
 });
 ```
